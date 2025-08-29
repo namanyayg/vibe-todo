@@ -11,12 +11,6 @@ import { Search, Filter, Plus, Settings } from 'lucide-react'
 
 const initialColumns: Column[] = [
   {
-    id: 'backlog',
-    title: 'Backlog',
-    color: '#6B7280',
-    tasks: [],
-  },
-  {
     id: 'todo',
     title: 'To Do',
     color: '#EF4444',
@@ -48,48 +42,24 @@ const sampleTasks: Task[] = [
     title: 'Design new user onboarding flow',
     description: 'Create wireframes and mockups for the improved user onboarding experience',
     status: 'todo',
-    priority: 'high',
-    assignee: 'Sarah Chen',
-    createdAt: new Date('2024-01-15'),
-    updatedAt: new Date('2024-01-15'),
-    labels: ['design', 'ux'],
-    estimatedHours: 8,
   },
   {
     id: '2',
     title: 'Implement authentication system',
     description: 'Set up JWT-based authentication with refresh tokens and proper security measures',
     status: 'in-progress',
-    priority: 'urgent',
-    assignee: 'Alex Rodriguez',
-    createdAt: new Date('2024-01-10'),
-    updatedAt: new Date('2024-01-16'),
-    labels: ['backend', 'security'],
-    estimatedHours: 12,
   },
   {
     id: '3',
     title: 'Fix mobile responsiveness issues',
     description: 'Address layout problems on mobile devices across all main pages',
     status: 'in-review',
-    priority: 'medium',
-    assignee: 'Jordan Kim',
-    createdAt: new Date('2024-01-12'),
-    updatedAt: new Date('2024-01-17'),
-    labels: ['frontend', 'mobile'],
-    estimatedHours: 4,
   },
   {
     id: '4',
     title: 'Setup CI/CD pipeline',
     description: 'Configure automated testing and deployment pipeline using GitHub Actions',
     status: 'done',
-    priority: 'medium',
-    assignee: 'Morgan Taylor',
-    createdAt: new Date('2024-01-08'),
-    updatedAt: new Date('2024-01-14'),
-    labels: ['devops', 'automation'],
-    estimatedHours: 6,
   },
 ]
 
@@ -112,8 +82,7 @@ export default function Home() {
   const columns = useMemo(() => {
     const filteredTasks = tasks.filter(task => 
       task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      task.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      task.assignee?.toLowerCase().includes(searchQuery.toLowerCase())
+      task.description?.toLowerCase().includes(searchQuery.toLowerCase())
     )
 
     return initialColumns.map(column => ({
@@ -133,21 +102,17 @@ export default function Home() {
     setIsModalOpen(true)
   }, [])
 
-  const handleSaveTask = useCallback((taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => {
-    const now = new Date()
-    
+  const handleSaveTask = useCallback((taskData: Omit<Task, 'id'>) => {
     if (editingTask) {
       setTasks(prev => prev.map(task => 
         task.id === editingTask.id 
-          ? { ...task, ...taskData, updatedAt: now }
+          ? { ...task, ...taskData }
           : task
       ))
     } else {
       const newTask: Task = {
         ...taskData,
         id: Date.now().toString(),
-        createdAt: now,
-        updatedAt: now,
       }
       setTasks(prev => [...prev, newTask])
     }
@@ -181,7 +146,7 @@ export default function Home() {
     if (newStatus && activeTask.status !== newStatus) {
       setTasks(prev => prev.map(task =>
         task.id === activeId 
-          ? { ...task, status: newStatus, updatedAt: new Date() }
+          ? { ...task, status: newStatus }
           : task
       ))
     }
